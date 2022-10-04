@@ -94,4 +94,6 @@ target_sources(cyclone_crypto
         ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/ecc/ecdsa.h
         ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/ecc/ec.c
         ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/ecc/ec.h
+        ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/pkc/rsa.c
+        ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/pkc/rsa.h
 )
