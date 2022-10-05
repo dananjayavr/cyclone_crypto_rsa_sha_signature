@@ -3,8 +3,8 @@ add_library(cyclone_crypto "")
 target_include_directories(cyclone_crypto
         PUBLIC
         ${PROJECT_SOURCE_DIR}/lib/
-        ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/common
-        ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/core
+        ${PROJECT_SOURCE_DIR}/lib/common
+        ${PROJECT_SOURCE_DIR}/lib/core
 
         ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/)
 

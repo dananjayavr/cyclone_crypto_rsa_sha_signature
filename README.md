@@ -22,8 +22,14 @@
 
 ### Note: 
 
-The file check_probable_prime.c is an example imlpementation of checkProbablePrime(), based on some mbedTLS routines (under Apache 2.0 permissive license). This is not a part of CycloneCRYPTO.
+#### About check_probable_prime.c
+  The file check_probable_prime.c is an example imlpementation of checkProbablePrime(), based on some mbedTLS routines (under Apache 2.0 permissive license). This is not a part of CycloneCRYPTO.
 
-CycloneCRYPTO is mainly oriented towards smaller footprint embedded targets. On such devices the computing cost for calculating a RSA keypair with a software implementation is quite large (~2 minutes). The funciton checkProbablePrime() is provided as a placeholder, so code running on embedded targets (SAMExx, Renesas RA6, etc.) can use hardware acceleration usually provided by MCU vendors.
+  CycloneCRYPTO is mainly oriented towards smaller footprint embedded targets. On such devices the computing cost for calculating a RSA keypair with a software implementation is quite large (~2 minutes). The funciton checkProbablePrime() is provided as a placeholder, so code running on embedded targets (SAMExx, Renesas RA6, etc.) can use hardware acceleration usually provided by MCU vendors.
 
-Naturally, this is not a big issue for a project running on a x86 based target (ex.Intel).
+  Naturally, this is not a big issue for a project running on a x86 based target (ex.Intel).
+
+#### About lib/ folder
+
+  This folder contains all the files/folders available for CycloneCRYPTO suite. Naturally, not all files/folders are used for this demo.
+  lib/CMakeLists.txt contains a list of dependencies for the current project.
