@@ -4,6 +4,7 @@
 #include "pkc/rsa.h"
 #include "rng/yarrow.h"
 
+// PRNG context
 YarrowContext yarrowContext;
 
 // This is the message to be signed.
@@ -47,7 +48,6 @@ int main(int argc, char* argv[]) {
     }
     // Initialize PRNG Algo
     error = yarrowInit(&yarrowContext);
-
     if (error)
     {
         printf("Error. CSPRNG initialization failed (%d)\r\n", error);
@@ -56,13 +56,9 @@ int main(int argc, char* argv[]) {
 
     // Seed PRNG
     error = yarrowSeed(&yarrowContext,randSeed, randSeedSize);
-
-    //Any error to report?
     if (error)
     {
-        //Debug message
         printf("Error. Failed to seed CSPRNG (%d)\r\n", error);
-        //Exit immediately
         return error;
     }
     printf("Done.\n");
@@ -77,20 +73,17 @@ int main(int argc, char* argv[]) {
     error = rsaGenerateKeyPair(YARROW_PRNG_ALGO,&yarrowContext,2048,65537,&privateKey,&publicKey);
     if (error)
     {
-        //Debug message
         printf("Failed to generate key pair.\r\n");
-        //Exit immediately
         return ERROR_FAILURE;
     }
     printf("Done.\n");
     printf("Computing SHA256 digest of the messsage...\n");
+
     //Digest the message to  be signed
     error = sha256Compute(message, 229, digest);
     if (error)
     {
-        //Debug message
         printf("Failed to compute Hash.\r\n");
-        //Exit immediately
         return ERROR_FAILURE;
     }
     printf("Done.\n");
