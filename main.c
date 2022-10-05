@@ -68,8 +68,8 @@ int main(int argc, char* argv[]) {
     rsaInitPrivateKey(&privateKey);
 
     // Create a key-pair RSA 2048
-    // e = 65537, using a frequently used public exposant value
-    printf("Generating RSA2048 key pair...\n");
+    // e = 65537, using a frequently used public exponent value
+    printf("Generating RSA 2048 key pair...\n");
     error = rsaGenerateKeyPair(YARROW_PRNG_ALGO,&yarrowContext,2048,65537,&privateKey,&publicKey);
     if (error)
     {
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 
     // Sign the message digest using the previously generated private key
     //RSA PKCS #1 v1.5 signature generation
-    printf("Signing the message using RSA2048 PK...\n");
+    printf("Signing the message using RSA 2048 PK...\n");
     error = rsassaPkcs1v15Sign(&privateKey, SHA256_HASH_ALGO,
                                digest, signature, &signatureLength);
 
