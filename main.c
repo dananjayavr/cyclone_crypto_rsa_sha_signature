@@ -37,10 +37,13 @@ int main(int argc, char *argv[])
 
     error = NO_ERROR;
 
+    // Initialize RSA public and private keys memory
+    rsaInitPublicKey(&publicKey);
+    rsaInitPrivateKey(&privateKey);
+
     // start of exception handling block
     do
     {
-
         printf("Initializing CSPRNG...\n");
         // Generatea CSPRNG Seed (32 bytes)
         // https://man7.org/linux/man-pages/man2/getrandom.2.html
@@ -68,10 +71,6 @@ int main(int argc, char *argv[])
             break;
         }
         printf("Done.\n");
-
-        // Initialize RSA public and private keys
-        rsaInitPublicKey(&publicKey);
-        rsaInitPrivateKey(&privateKey);
 
         // Create a key-pair RSA 2048
         // e = 65537, using a frequently used public exponent value
