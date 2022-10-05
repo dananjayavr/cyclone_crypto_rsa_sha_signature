@@ -24,8 +24,9 @@ unsigned char message[] = {0xF4, 0x5D, 0x55, 0xF3, 0x55, 0x51, 0xE9, 0x75, 0xD6,
                            0x0B, 0x1F, 0x6B, 0x56, 0xD0, 0xB3, 0x06, 0x0F, 0xF0, 0xF1, 0xC4, 0xCB, 0x0D, 0x0E, 0x00, 0x1D,
                            0xD5, 0x9D, 0x73, 0xBE, 0x12};
 
-int main(int argc, char* argv[]) {
-	error_t error;
+int main(int argc, char *argv[])
+{
+    error_t error;
     uint8_t digest[64];
     uint8_t signature[512];
     size_t signatureLength;
@@ -36,87 +37,97 @@ int main(int argc, char* argv[]) {
 
     error = NO_ERROR;
 
-    printf("Initializing CSPRNG...\n");
-    // Generatea CSPRNG Seed (32 bytes)
-    // https://man7.org/linux/man-pages/man2/getrandom.2.html
-    // getrandom() was introduced in version 3.17 of the Linux kernel.
-    randSeedSize = getrandom(randSeed, 32, GRND_RANDOM);
-    if(randSeedSize != 32) {
-        //Debug message
-        printf("Error. CSPRNG Seed failed (%d)\r\n", error);
-        return ERROR_FAILURE;
-    }
-    // Initialize PRNG Algo
-    error = yarrowInit(&yarrowContext);
-    if (error)
+    // start of exception handling block
+    do
     {
-        printf("Error. CSPRNG initialization failed (%d)\r\n", error);
-        return ERROR_FAILURE;
-    }
 
-    // Seed PRNG
-    error = yarrowSeed(&yarrowContext,randSeed, randSeedSize);
-    if (error)
-    {
-        printf("Error. Failed to seed CSPRNG (%d)\r\n", error);
-        return error;
-    }
-    printf("Done.\n");
+        printf("Initializing CSPRNG...\n");
+        // Generatea CSPRNG Seed (32 bytes)
+        // https://man7.org/linux/man-pages/man2/getrandom.2.html
+        // getrandom() was introduced in version 3.17 of the Linux kernel.
+        randSeedSize = getrandom(randSeed, 32, GRND_RANDOM);
+        if (randSeedSize != 32)
+        {
+            // Debug message
+            printf("Error. CSPRNG Seed failed (%d)\r\n", error);
+            break;
+        }
+        // Initialize PRNG Algo
+        error = yarrowInit(&yarrowContext);
+        if (error)
+        {
+            printf("Error. CSPRNG initialization failed (%d)\r\n", error);
+            break;
+        }
 
-    //Initialize RSA public and private keys
-    rsaInitPublicKey(&publicKey);
-    rsaInitPrivateKey(&privateKey);
+        // Seed PRNG
+        error = yarrowSeed(&yarrowContext, randSeed, randSeedSize);
+        if (error)
+        {
+            printf("Error. Failed to seed CSPRNG (%d)\r\n", error);
+            break;
+        }
+        printf("Done.\n");
 
-    // Create a key-pair RSA 2048
-    // e = 65537, using a frequently used public exponent value
-    printf("Generating RSA 2048 key pair...\n");
-    error = rsaGenerateKeyPair(YARROW_PRNG_ALGO,&yarrowContext,2048,65537,&privateKey,&publicKey);
-    if (error)
-    {
-        printf("Failed to generate key pair.\r\n");
-        return ERROR_FAILURE;
-    }
-    printf("Done.\n");
-    printf("Computing SHA256 digest of the messsage...\n");
+        // Initialize RSA public and private keys
+        rsaInitPublicKey(&publicKey);
+        rsaInitPrivateKey(&privateKey);
 
-    //Digest the message to  be signed
-    error = sha256Compute(message, 229, digest);
-    if (error)
-    {
-        printf("Failed to compute Hash.\r\n");
-        return ERROR_FAILURE;
-    }
-    printf("Done.\n");
+        // Create a key-pair RSA 2048
+        // e = 65537, using a frequently used public exponent value
+        printf("Generating RSA 2048 key pair...\n");
+        error = rsaGenerateKeyPair(YARROW_PRNG_ALGO, &yarrowContext, 2048, 65537, &privateKey, &publicKey);
+        if (error)
+        {
+            printf("Failed to generate key pair.\r\n");
+            break;
+        }
+        printf("Done.\n");
+        printf("Computing SHA256 digest of the messsage...\n");
 
-    // Sign the message digest using the previously generated private key
-    //RSA PKCS #1 v1.5 signature generation
-    printf("Signing the message using RSA 2048 PK...\n");
-    error = rsassaPkcs1v15Sign(&privateKey, SHA256_HASH_ALGO,
-                               digest, signature, &signatureLength);
+        // Digest the message to  be signed
+        error = sha256Compute(message, sizeof(message), digest);
+        if (error)
+        {
+            printf("Failed to compute Hash.\r\n");
+            break;
+        }
+        printf("Done.\n");
 
-    if(error) {
-        printf("Could not sign the message.\n");
-        return ERROR_FAILURE;
-    }
-    printf("Done.\n");
+        // Sign the message digest using the previously generated private key
+        // RSA PKCS #1 v1.5 signature generation
+        printf("Signing the message using RSA 2048 PK...\n");
+        error = rsassaPkcs1v15Sign(&privateKey, SHA256_HASH_ALGO,
+                                   digest, signature, &signatureLength);
 
-    // Verify the message
-    //RSA PKCS #1 v1.5 signature verification
-    printf("Verifying the signature...\n");
-    error = rsassaPkcs1v15Verify(&publicKey, SHA256_HASH_ALGO,
-                                 digest, signature, 256);
+        if (error)
+        {
+            printf("Could not sign the message.\n");
+            break;
+        }
+        printf("Done.\n");
 
-    if(error) {
-        printf("Could not verify the message.\n");
-        return ERROR_FAILURE;
-    }
-    printf("Done.\n");
+        // Verify the message
+        // RSA PKCS #1 v1.5 signature verification
+        printf("Verifying the signature...\n");
+        error = rsassaPkcs1v15Verify(&publicKey, SHA256_HASH_ALGO,
+                                     digest, signature, 256);
 
-    printf("RSA2048 Signature Generation/Verification Complete.\n");
+        if (error)
+        {
+            printf("Could not verify the message.\n");
+            break;
+        }
+        printf("Done.\n");
 
-    //Release previously allocated resources
+        printf("RSA2048 Signature Generation/Verification Complete.\n");
+
+        // end of exception handling block
+    } while (0);
+
+    // Release previously allocated resources
     rsaFreePublicKey(&publicKey);
     rsaFreePrivateKey(&privateKey);
 
-	return NO_ERROR;
+    return NO_ERROR;
 }
