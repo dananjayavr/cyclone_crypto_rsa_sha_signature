@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     }
     printf("Done.\n");
 
-    // Sign the message using the previously generated private key
+    // Sign the message digest using the previously generated private key
     //RSA PKCS #1 v1.5 signature generation
     printf("Signing the message using RSA2048 PK...\n");
     error = rsassaPkcs1v15Sign(&privateKey, SHA256_HASH_ALGO,

@@ -1,8 +1,28 @@
-### Requirements
+### Prerequisites
 
-1. create key-pair (private + public, rsa2048)
-2. sign 'image.bin' with SHA256 (i.e. 'image_sign.bin), using the private key
-   i.e. 'image_sign.bin' now holds the 'image.bin' + signature
-3. verify 'image_sign.bin' and return TRUE/FALSE if the 'image.bin' is verify okay.
-4. Note that I would like to test it aon ubuntu linux machine, and later compile it on vxWorks workbench
-5. The project is based on vxWorks-7 with Intel core.
+ - CMake (project built/tested using CMake 3.23.3)
+ - Linux distro (project built/tested on Ubuntu 20.04 LTS on Windows Subsystem for Linux (WSL2))
+
+
+### Project architecture
+
+ - main.c : main entrypoint
+ - check_probable_prime.c : reference implmentation, please see the note below
+ - lib/common : common files for CycloneCRYPTO (Open)
+ - lib/core : core files for CycloneCRYPTO (Open)
+ - lib/cyclone_crypto : complete source code for CycloneCRYPTO (Open)
+
+### Build 
+
+ - create a 'build' directory at the project root.
+ - From within 'build' directory, execute the following commands:
+   - cmake ..
+   - cmake --build .
+   - ./rsa_sha_demo
+- ./rsa_sha_demo will run the demo.
+
+### Note: 
+
+The file check_probable_prime.c is an example imlpementation of checkProbablePrime(), based on some mbedTLS routines (under Apache 2.0 permissive license). This is not a part of CycloneCRYPTO.
+
+CycloneCRYPTO is mainly oriented towards smaller footprint embedded targets. ...
