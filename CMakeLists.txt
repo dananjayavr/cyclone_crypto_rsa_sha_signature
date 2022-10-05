@@ -5,7 +5,7 @@ project(rsa_sha_demo)
 add_subdirectory(lib)
 
 # add the executable
-add_executable(rsa_sha_demo main.c)
+add_executable(rsa_sha_demo main.c check_probable_prime.c)
 
 target_link_libraries(rsa_sha_demo PUBLIC cyclone_crypto)
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
