@@ -3,6 +3,10 @@
 #include "core/crypto.h"
 #include "pkc/rsa.h"
 #include "rng/yarrow.h"
+#include "pkix/pem_import.h"
+
+#define USE_CYCLONE_KEYS 0
+#define USE_OPENSSL_KEYS 1
 
 // PRNG context
 YarrowContext yarrowContext;
@@ -24,6 +28,58 @@ unsigned char message[] = {0xF4, 0x5D, 0x55, 0xF3, 0x55, 0x51, 0xE9, 0x75, 0xD6,
                            0x0B, 0x1F, 0x6B, 0x56, 0xD0, 0xB3, 0x06, 0x0F, 0xF0, 0xF1, 0xC4, 0xCB, 0x0D, 0x0E, 0x00, 0x1D,
                            0xD5, 0x9D, 0x73, 0xBE, 0x12};
 
+int read_file(const char *file_path, char **file_contents, size_t *file_size) {
+    FILE* fh = NULL;
+    size_t fs = 0;
+
+    if(file_path == NULL) {
+        printf("read_file: Error. Missing file path.\r\n" );
+        return EXIT_FAILURE;
+    }
+
+    //Open input file
+    fh = fopen(file_path, "rb");
+
+    //Failed to open input file?
+    if (fh == NULL)
+    {
+        //User message
+        printf("read_file: Error. Cannot open %s!\r\n", file_path);
+        //Report an error
+        return EXIT_FAILURE;
+    }
+
+    //Retrieve the length of the file
+    fseek(fh, 0, SEEK_END);
+    fs = ftell(fh);
+    fseek(fh, 0, SEEK_SET);
+
+    *file_contents = (char*)malloc(fs);
+
+    if (*file_contents == NULL)
+    {
+        //User message
+        printf("read_file: Error. Failed to allocate memory for the input file!\r\n");
+
+        //Clean-up side effects
+        fclose(fh);
+
+        //Report an error
+        return EXIT_FAILURE;
+    }
+
+    //Read the contents of the file
+    fread(*file_contents, fs, 1, fh);
+
+    // Copy the file size to the input parameter
+    *file_size = fs;
+
+    //Close input file
+    fclose(fh);
+
+    return EXIT_SUCCESS;
+}
+
 int main(int argc, char *argv[])
 {
     error_t error;
@@ -35,6 +91,13 @@ int main(int argc, char *argv[])
     RsaPublicKey publicKey;
     RsaPrivateKey privateKey;
 
+    #if USE_OPENSSL_KEYS
+    char_t *private_key_raw;
+    size_t private_key_raw_size;
+    char_t *public_key_raw;
+    size_t public_key_raw_size;
+    #endif
+
     error = NO_ERROR;
 
     // Initialize RSA public and private keys memory
@@ -44,6 +107,7 @@ int main(int argc, char *argv[])
     // start of exception handling block
     do
     {
+        #if USE_CYCLONE_KEYS
         printf("Initializing CSPRNG...\n");
         // Generatea CSPRNG Seed (32 bytes)
         // https://man7.org/linux/man-pages/man2/getrandom.2.html
@@ -82,6 +146,38 @@ int main(int argc, char *argv[])
             break;
         }
         printf("Done.\n");
+        #endif
+        #if USE_OPENSSL_KEYS
+
+        error = read_file("../my_rsa_key.pem",&private_key_raw, &private_key_raw_size);
+        if(error)
+        {
+            printf("Failed to import private key.\n");
+            break;
+        }
+
+        error = read_file("../my_rsa_public_key.pem",&public_key_raw,&public_key_raw_size);
+        if(error)
+        {
+            printf("Failed to import public key.\n");
+            break;
+        }
+
+        error = pemImportRsaPrivateKey(private_key_raw,private_key_raw_size,&privateKey);
+        if(error)
+        {
+            printf("Failed to load private key.\n");
+            break;
+        }
+
+        error = pemImportRsaPublicKey(public_key_raw,public_key_raw_size,&publicKey);
+        if(error)
+        {
+            printf("Failed to load public key.\n");
+            break;
+        }
+
+        #endif
         printf("Computing SHA256 digest of the messsage...\n");
 
         // Digest the message to  be signed

@@ -33,3 +33,7 @@
 
   This folder contains all the files/folders available for CycloneCRYPTO suite. Naturally, not all files/folders are used for this demo.
   lib/CMakeLists.txt contains a list of dependencies for the current project.
+
+
+  openssl genrsa -out my_rsa_key.pem 2048
+  openssl rsa -in my_rsa_key.pem -outform PEM -pubout -out my_rsa_public.key

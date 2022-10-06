@@ -111,4 +111,8 @@
 #define WHIRLPOOL_SUPPORT DISABLED
 //SECP256K1 curve support
 #define SECP256K1_SUPPORT ENABLED
+// PEM support
+#define PEM_SUPPORT ENABLED
+// RSA support
+#define RSA_SUPPORT ENABLED
 #endif
