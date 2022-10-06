@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
         }
         printf("Done.\n");
 
-        printf("RSA2048 Signature Generation/Verification Complete.\n");
+        printf("RSA 2048 Signature Generation/Verification Complete.\n");
 
         // end of exception handling block
     } while (0);
