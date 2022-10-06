@@ -8,6 +8,8 @@
 #define USE_CYCLONE_KEYS 0
 #define USE_OPENSSL_KEYS 1
 
+int read_file(const char *file_path, char **file_contents, size_t *file_size);
+
 // PRNG context
 YarrowContext yarrowContext;
 
@@ -86,8 +88,6 @@ int main(int argc, char *argv[])
     uint8_t digest[64];
     uint8_t signature[512];
     size_t signatureLength;
-    uint8_t randSeed[32];
-    size_t randSeedSize;
     RsaPublicKey publicKey;
     RsaPrivateKey privateKey;
 
@@ -96,6 +96,11 @@ int main(int argc, char *argv[])
     size_t private_key_raw_size;
     char_t *public_key_raw;
     size_t public_key_raw_size;
+    #endif
+
+    #if USE_CYCLONE_KEYS
+    uint8_t randSeed[32];
+    size_t randSeedSize;
     #endif
 
     error = NO_ERROR;
@@ -149,33 +154,41 @@ int main(int argc, char *argv[])
         #endif
         #if USE_OPENSSL_KEYS
 
+        printf("Importing RSA 2048 Private Key...\n");
         error = read_file("../my_rsa_key.pem",&private_key_raw, &private_key_raw_size);
         if(error)
         {
             printf("Failed to import private key.\n");
             break;
         }
+        printf("Done.\n");
 
+        printf("Importing RSA 2048 Public Key...\n");
         error = read_file("../my_rsa_public_key.pem",&public_key_raw,&public_key_raw_size);
         if(error)
         {
             printf("Failed to import public key.\n");
             break;
         }
+        printf("Done.\n");
 
+        printf("Loading RSA 2048 Private Key...\n");
         error = pemImportRsaPrivateKey(private_key_raw,private_key_raw_size,&privateKey);
         if(error)
         {
             printf("Failed to load private key.\n");
             break;
         }
+        printf("Done.\n");
 
+        printf("Loading RSA 2048 Public Key...\n");
         error = pemImportRsaPublicKey(public_key_raw,public_key_raw_size,&publicKey);
         if(error)
         {
             printf("Failed to load public key.\n");
             break;
         }
+        printf("Done.\n");
 
         #endif
         printf("Computing SHA256 digest of the messsage...\n");
