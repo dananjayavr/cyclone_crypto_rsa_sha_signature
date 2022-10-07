@@ -30,6 +30,6 @@
 #define _OS_PORT_CONFIG_H
 
 //Select underlying RTOS
-//#define __linux__ // commented out because of a previous definition error
+#define USE_NO_RTOS
 
 #endif

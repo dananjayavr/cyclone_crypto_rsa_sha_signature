@@ -12,8 +12,8 @@ target_include_directories(cyclone_crypto
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     target_sources(cyclone_crypto
             PUBLIC
-            ${PROJECT_SOURCE_DIR}/lib/common/os_port_posix.h
-            ${PROJECT_SOURCE_DIR}/lib/common/os_port_posix.c
+            ${PROJECT_SOURCE_DIR}/lib/common/os_port_none.h # modified from os_port_posix.h
+            ${PROJECT_SOURCE_DIR}/lib/common/os_port_none.c # modified from os_port_posix.c
             )
 endif()
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
