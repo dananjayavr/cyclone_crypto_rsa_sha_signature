@@ -30,6 +30,6 @@
 #define _OS_PORT_CONFIG_H
 
 //Select underlying RTOS
-#define USE_NO_RTOS
+#define OS_PORT_NONE
 
 #endif

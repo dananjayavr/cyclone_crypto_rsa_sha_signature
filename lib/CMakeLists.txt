@@ -9,6 +9,7 @@ target_include_directories(cyclone_crypto
         ${PROJECT_SOURCE_DIR}/lib/cyclone_crypto/)
 
 # add the main library
+# add VxWorks specific port file here, instead of Linux
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     target_sources(cyclone_crypto
             PUBLIC
